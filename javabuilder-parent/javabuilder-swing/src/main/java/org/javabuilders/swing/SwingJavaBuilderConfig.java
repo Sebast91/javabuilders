@@ -83,6 +83,7 @@ import javax.swing.JViewport;
 import javax.swing.JWindow;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
+import javax.swing.tree.TreeModel;
 import javax.swing.border.Border;
 import javax.swing.event.SwingPropertyChangeSupport;
 import javax.swing.table.TableCellEditor;
@@ -113,9 +114,12 @@ import org.javabuilders.swing.handler.event.ComponentMouseListenerHandler;
 import org.javabuilders.swing.handler.event.ComponentMouseMotionListenerHandler;
 import org.javabuilders.swing.handler.event.ComponentMouseWheelListenerHandler;
 import org.javabuilders.swing.handler.event.JFrameWindowListenerHandler;
+import org.javabuilders.swing.handler.event.JListSelectionDataListenerHandler;
 import org.javabuilders.swing.handler.event.JListSelectionListenerHandler;
 import org.javabuilders.swing.handler.event.JTabbedPaneChangeListenerHandler;
+import org.javabuilders.swing.handler.event.JTableSelectionDataListenerHandler;
 import org.javabuilders.swing.handler.event.JTableSelectionListenerHandler;
+import org.javabuilders.swing.handler.event.JTreeSelectionDataListenerHandler;
 import org.javabuilders.swing.handler.event.JTreeSelectionListenerHandler;
 import org.javabuilders.swing.handler.event.WindowListenerHandler;
 import org.javabuilders.swing.handler.event.background.SwingBackgroundProcessingHandler;
@@ -144,11 +148,13 @@ import org.javabuilders.swing.handler.type.JListFinishProcessor;
 import org.javabuilders.swing.handler.type.JSpiltPaneTypeHandler;
 import org.javabuilders.swing.handler.type.JTabbedPaneTypeHandler;
 import org.javabuilders.swing.handler.type.JTableFinishProcessor;
+import org.javabuilders.swing.handler.type.JTreeFinishProcessor;
 import org.javabuilders.swing.handler.type.SwingActionHandler;
 import org.javabuilders.swing.handler.type.TableColumnTypeHandler;
 import org.javabuilders.swing.handler.type.glazedlists.EventComboBoxModelTypeHandler;
 import org.javabuilders.swing.handler.type.glazedlists.EventListModelTypeHandler;
 import org.javabuilders.swing.handler.type.glazedlists.EventTableModelTypeHandler;
+import org.javabuilders.swing.handler.type.glazedlists.EventTreeModelTypeHandler;
 import org.javabuilders.swing.handler.type.layout.CardLayoutTypeHandler;
 import org.javabuilders.swing.handler.type.layout.FlowLayoutTypeHandler;
 import org.javabuilders.swing.handler.type.layout.MigLayoutHandler;
@@ -157,6 +163,7 @@ import org.javabuilders.swing.handler.type.model.DefaultComboBoxModelHandler;
 import ca.odell.glazedlists.swing.EventComboBoxModel;
 import ca.odell.glazedlists.swing.EventListModel;
 import ca.odell.glazedlists.swing.EventTableModel;
+import ca.odell.glazedlists.swing.EventTreeModel;
 
 public class SwingJavaBuilderConfig extends BuilderConfig implements IStringLiteralControlConfig {
 
@@ -350,6 +357,7 @@ public class SwingJavaBuilderConfig extends BuilderConfig implements IStringLite
 			.defaultResize(DefaultResize.BOTH)
 			.finishProcessor(new JListFinishProcessor())
 			.propertyHandler(JListSelectionListenerHandler.getInstance())
+			.propertyHandler(JListSelectionDataListenerHandler.getInstance())
 			.childrenOverride(true).children(ListModel.class,0,1);
 		forType(JMenu.class)
 			.children(ButtonGroup.class,0,Integer.MAX_VALUE);
@@ -398,6 +406,7 @@ public class SwingJavaBuilderConfig extends BuilderConfig implements IStringLite
 			.propertyConstants("selectionMode", ListSelectionModel.class)
 			.typeAsMethod(TableModel.class, "setModel")
 			.propertyHandler(JTableSelectionListenerHandler.getInstance())
+			.propertyHandler(JTableSelectionDataListenerHandler.getInstance())
 			.children(TableColumn.class, 0, Integer.MAX_VALUE)
 			.children(TableModel.class,0,1);
 		forType(JTextComponent.class)
@@ -410,8 +419,11 @@ public class SwingJavaBuilderConfig extends BuilderConfig implements IStringLite
 		forType(JToggleButton.class)
 			.childrenOverride(true).children(0);
 		forType(JTree.class)
+			.finishProcessor(JTreeFinishProcessor.getInstance())
 			.defaultResize(DefaultResize.BOTH)
-			.propertyHandler(JTreeSelectionListenerHandler.getInstance());
+			.propertyHandler(JTreeSelectionListenerHandler.getInstance())
+			.propertyHandler(JTreeSelectionDataListenerHandler.getInstance())
+			.childrenOverride(true).children(TreeModel.class,0,1);
 		forType(TableCellRenderer.class)
 			.ignore(TableColumnTypeHandler.FOR_HEADER);
 
@@ -458,7 +470,7 @@ public class SwingJavaBuilderConfig extends BuilderConfig implements IStringLite
 		try {
 			Class.forName("ca.odell.glazedlists.BasicEventList");
 			//add GlazedLists support if in path
-			addType(EventListModel.class,EventTableModel.class, EventComboBoxModel.class);
+			addType(EventListModel.class, EventTableModel.class, EventTreeModel.class, EventComboBoxModel.class);
 			forType(EventListModel.class)
 				.typeHandler(new EventListModelTypeHandler());
 			forType(EventComboBoxModel.class)
@@ -466,8 +478,8 @@ public class SwingJavaBuilderConfig extends BuilderConfig implements IStringLite
 			forType(EventTableModel.class)
 				.asList(EventTableModelTypeHandler.COLUMNS, EventTableModelTypeHandler.SORT_BY)
 				.typeHandler(new EventTableModelTypeHandler());
-			
-			
+			forType(EventTreeModel.class)
+				.typeHandler(new EventTreeModelTypeHandler());
 		} catch (ClassNotFoundException e) {
 			LOGGER.info("GlazedLists not found in path, GlazedLists support not initialized.");
 		}

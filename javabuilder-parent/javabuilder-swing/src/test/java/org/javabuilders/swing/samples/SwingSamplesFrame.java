@@ -44,6 +44,7 @@ public class SwingSamplesFrame extends JFrame {
 	private GlazedListsSamplePanel glazedListsPanel;
 	private JDesktopPanePanel desktopPanePanel;
 	private AlignmentAndSizesPanel alignmentSizesPanel;
+	private SelectionEventsPanel selectionEventsPanel;
 	
 	//usually the last variable in the list of instance variables...
 	private BuildResult result;

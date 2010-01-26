@@ -27,10 +27,9 @@ import org.javabuilders.util.BuilderUtils;
  *
  */
 public class JTableSelectionListenerHandler extends AbstractPropertyHandler implements IPropertyList {
-
 	public static final String ON_SELECTION = "onSelection";
 	private final static List<ValueListDefinition> defs = ValueListDefinition.getCommonEventDefinitions(ListSelectionEvent.class);
-	
+
 	private static final JTableSelectionListenerHandler singleton = new JTableSelectionListenerHandler();
 
 	/**
@@ -38,7 +37,6 @@ public class JTableSelectionListenerHandler extends AbstractPropertyHandler impl
 	 */
 	public static JTableSelectionListenerHandler getInstance() {return singleton;}
 
-	
 	/**
 	 * @param consumedKeys
 	 */
@@ -52,14 +50,15 @@ public class JTableSelectionListenerHandler extends AbstractPropertyHandler impl
 	@SuppressWarnings("unchecked")
 	public void handle(BuilderConfig config, final BuildProcess process, Node node,
 			String key) throws BuildException {
-
 		final JTable target = (JTable)node.getMainObject();
 		final Values<String,ObjectMethod> values = (Values<String, ObjectMethod>) node.getProperty(key);
 
 		if (values.size() > 0) {
 			target.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				public void valueChanged(ListSelectionEvent e) {
-					BuilderUtils.invokeCallerEventMethods(process.getBuildResult(), target, values.values(), e);
+					if (e.getValueIsAdjusting() == false) {
+						BuilderUtils.invokeCallerEventMethods(process.getBuildResult(), target, values.values(), e);
+					}
 				}
 			});
 		}
@@ -72,12 +71,10 @@ public class JTableSelectionListenerHandler extends AbstractPropertyHandler impl
 		return defs;
 	}
 
-
 	/* (non-Javadoc)
 	 * @see org.javabuilders.IPropertyList#isList(java.lang.String)
 	 */
 	public boolean isList(String propertyName) {
 		return true;
 	}
-
 }
