@@ -1,0 +1,38 @@
+JPanel:
+     - JScrollPane(name=jlistJSP1):
+         JList(name=jlistSource,onSelection=onSelectionActionsJL,onSelectionData=onSelectionDataActionsJL)
+     - JTextField(name=jlistSelectionEventJTF,editable=false)
+     - JTextField(name=jlistSelectionDataEventJTF,editable=false)
+     - JScrollPane(name=jlistJSP2):
+         JTable(name=jlistJT):
+             - EventTableModel(name=jlistPeopleDetailsModel,source=jlistPeopleDetails,sort=multi,sortBy=[firstName,lastName])
+     - JScrollPane(name=jtableJSP1):
+         JTable(name=jtableSource,onSelection=onSelectionActionsJT,onSelectionData=onSelectionDataActionsJT):
+             - EventTableModel(name=jtableSourceModel,source=peopleList)
+     - JTextField(name=jtableSelectionEventJTF,editable=false)
+     - JTextField(name=jtableSelectionDataEventJTF,editable=false)
+     - JScrollPane(name=jtableJSP2):
+         JTable(name=jtableJT):
+             - EventTableModel(name=jtablePeopleDetailsModel,source=jtablePeopleDetails,sort=multi,sortBy=[firstName,lastName])
+     - JScrollPane(name=jtreeJSP1):
+         JTree(name=jtreeSource,onSelection=onSelectionActionsJTree,onSelectionData=onSelectionDataActionsJTree):
+             EventTreeModel(name=jtreeSourceModel,source=peopleList,nodes=[lastName,firstName])
+     - JTextField(name=jtreeSelectionEventJTF,editable=false)
+     - JTextField(name=jtreeSelectionDataEventJTF,editable=false)
+     - JScrollPane(name=jtreeJSP2):
+         JTable(name=jtreeJT):
+             - EventTableModel(name=jtreePeopleDetailsModel,source=jtreePeopleDetails,sort=multi,sortBy=[firstName,lastName])
+     - JScrollPane(name=scrollYaml): JTextArea(name=yaml,editable=false,font=Monospaced)
+     - JLabel(name=help, text=Select data in first row components, font=bold)
+     - MigLayout: |
+         [50,grow]                    [50,grow]                     [50,grow]
+         jlistJSP1                    jtableJSP1                    jtreeJSP1                    [50,grow]
+         jlistSelectionEventJTF       jtableSelectionEventJTF       jtreeSelectionEventJTF
+         jlistSelectionDataEventJTF   jtableSelectionDataEventJTF   jtreeSelectionDataEventJTF
+         jlistJSP2                    jtableJSP2                    jtreeJSP2                    [50,grow]
+         "YAML:"
+         scrollYaml+*                                                                            [50,grow]
+         help+*
+bind:
+    - yaml.text: this.yaml
+    - jlistSource.model: this.peopleList
